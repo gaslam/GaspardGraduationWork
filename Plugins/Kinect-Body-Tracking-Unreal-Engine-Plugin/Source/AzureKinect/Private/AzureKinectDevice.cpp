@@ -5,17 +5,17 @@
 DEFINE_LOG_CATEGORY(AzureKinectDeviceLog);
 
 UAzureKinectDevice::UAzureKinectDevice() :
-	NativeDevice(nullptr),
-	Thread(nullptr),
-	DeviceIndex(-1),
-	bOpen(false),
-	NumTrackedSkeletons(0),
 	DepthMode(EKinectDepthMode::NFOV_2X2BINNED),
 	ColorMode(EKinectColorResolution::RESOLUTION_720P),
 	Fps(EKinectFps::PER_SECOND_30),
 	SensorOrientation(EKinectSensorOrientation::DEFAULT),
+	DeviceIndex(-1),
 	bSkeletonTracking(false),
-	Capture(nullptr)
+	bOpen(false),
+	NativeDevice(nullptr),
+	Capture(nullptr),
+	Thread(nullptr),
+	NumTrackedSkeletons(0)
 {
 	LoadDevices();
 }
@@ -47,7 +47,7 @@ void UAzureKinectDevice::LoadDevices()
 			}
 			catch (const k4a::error& Err)
 			{
-				UE_LOG(AzureKinectDeviceLog, Error, TEXT("Can't load: %s"), TCHAR_TO_UTF8(ANSI_TO_TCHAR(Err.what())));
+				UE_LOG(AzureKinectDeviceLog, Error, TEXT("Can't load: %hs"), TCHAR_TO_UTF8(ANSI_TO_TCHAR(Err.what())));
 			}
 		}
 	}
@@ -125,7 +125,7 @@ bool UAzureKinectDevice::StartDevice()
 		//test._handle_name_
 		//k4a::handle::
 		// Start the camera with the given configuration
-		//k4a_device_stop_cameras(device);
+		k4a_device_stop_cameras(device);
 		if (K4A_FAILED(k4a_device_start_cameras(device, &config)))
 		{
 			printf("Failed to start cameras!\n");
@@ -374,12 +374,12 @@ void UAzureKinectDevice::CaptureColorImage()
 	else
 	{
 
-		FTextureResource* TextureResource = ColorTexture->Resource;
+		FTextureResource* TextureResource = ColorTexture->GetResource();
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
 			[TextureResource, Region, SourceBuffer](FRHICommandListImmediate& RHICmdList) {
-				FTexture2DRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
+				FTextureRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
 				if (!Texture2D)
 				{
 					return;
@@ -472,12 +472,12 @@ void UAzureKinectDevice::CaptureDepthImage()
 			}
 		}
 		
-		FTextureResource* TextureResource = DepthTexture->Resource;
+		FTextureResource* TextureResource = DepthTexture->GetResource();
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
 			[TextureResource, Region, SrcData](FRHICommandListImmediate& RHICmdList) {
-				FTexture2DRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
+				FTextureRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
 				if (!Texture2D)
 				{
 					return;
@@ -531,12 +531,12 @@ void UAzureKinectDevice::CaptureInflaredImage()
 			}
 		}
 		
-		FTextureResource* TextureResource = InflaredTexture->Resource;
+		FTextureResource* TextureResource = InflaredTexture->GetResource();
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
 			[TextureResource, Region, SrcData](FRHICommandListImmediate& RHICmdList) {
-				FTexture2DRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
+				FTextureRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
 				if (!Texture2D)
 				{
 					return;
@@ -574,12 +574,12 @@ void UAzureKinectDevice::CaptureBodyIndexImage(const k4abt::frame& BodyFrame)
 			SrcData.Push(0xff);
 		}
 
-		FTextureResource* TextureResource = BodyIndexTexture->Resource;
+		FTextureResource* TextureResource = BodyIndexTexture->GetResource();
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
 			[TextureResource, Region, SrcData](FRHICommandListImmediate& RHICmdList) {
-				FTexture2DRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
+				FTextureRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
 				if (!Texture2D)
 				{
 					return;
