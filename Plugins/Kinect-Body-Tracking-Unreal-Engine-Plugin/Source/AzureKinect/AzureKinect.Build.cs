@@ -12,9 +12,25 @@ public class AzureKinect : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			string sdkPath = System.Environment.GetEnvironmentVariable("AZUREKINECT_SDK");
-			string bodySdkPath = System.Environment.GetEnvironmentVariable("AZUREKINECT_BODY_SDK");
 
-			PublicIncludePaths.AddRange(
+            System.Console.WriteLine($"{nameof(sdkPath)}: {sdkPath}");
+            string bodySdkPath = System.Environment.GetEnvironmentVariable("AZUREKINECT_BODY_SDK");
+            System.Console.WriteLine($"{nameof(bodySdkPath)}: {bodySdkPath}");
+
+            string depthEngineDllPath = Path.Combine(sdkPath, "sdk", "windows-desktop", "amd64", "release", "bin", "depthengine_2_0.dll");
+
+            System.Console.WriteLine($"{nameof(depthEngineDllPath)}: {depthEngineDllPath}");
+            string k4aDllPath = Path.Combine(sdkPath, "sdk", "windows-desktop", "amd64", "release", "bin", "k4a.dll");
+            System.Console.WriteLine($"{nameof(k4aDllPath)}: {k4aDllPath}");
+            string k4abtDllPath = Path.Combine(bodySdkPath, "sdk", "windows-desktop", "amd64", "release", "bin", "k4abt.dll");
+            System.Console.WriteLine($"{nameof(k4abtDllPath)}: {k4abtDllPath}");
+
+            string bodyTrackingDLL = Path.Combine(bodySdkPath, "sdk", "netstandard2.0", "release", "microsoft.azure.kinect.bodytracking.dll");
+            System.Console.WriteLine($"{nameof(bodyTrackingDLL)}: {bodyTrackingDLL}");
+            string bodyTrackingPDB = Path.Combine(bodySdkPath, "sdk", "netstandard2.0", "release", "Microsoft.Azure.Kinect.BodyTracking.pbd");
+            System.Console.WriteLine($"{nameof(bodyTrackingPDB)}: {bodyTrackingPDB}");
+
+            PublicIncludePaths.AddRange(
 				new string[] {
 					Path.Combine(sdkPath, "sdk", "include"),
 					Path.Combine(bodySdkPath, "sdk", "include")
@@ -24,27 +40,17 @@ public class AzureKinect : ModuleRules
 				new string[] {
 					Path.Combine(sdkPath, "sdk", "windows-desktop", "amd64", "release", "lib", "k4a.lib"),
 					Path.Combine(sdkPath, "sdk", "windows-desktop", "amd64", "release", "lib", "k4arecord.lib"),
-					Path.Combine(bodySdkPath, "sdk", "windows-desktop", "amd64", "release", "lib", "k4abt.lib")
+					Path.Combine(bodySdkPath, "sdk", "windows-desktop", "amd64", "release", "lib", "k4abt.lib"),
 				});
-			System.Console.WriteLine("TEST TEST TEST TEST TEST TEST TEST");
-			
 
+            bEnableExceptions = true;
 
-			string depthEngineDllPath = Path.Combine(sdkPath, "sdk", "windows-desktop", "amd64", "release", "bin", "depthengine_2_0.dll");
-			string k4aDllPath = Path.Combine(sdkPath, "sdk", "windows-desktop", "amd64", "release", "bin", "k4a.dll");
-			string k4abtDllPath = Path.Combine(bodySdkPath, "sdk", "windows-desktop", "amd64", "release", "bin", "k4abt.dll");
-
-			//string bodyTrackingDLL = Path.Combine(bodySdkPath, "sdk", "netstandard2.0", "release", "microsoft.azure.kinect.bodytracking.dll");
-			//string bodyTrackingPDB = Path.Combine(bodySdkPath, "sdk", "netstandard2.0", "release", "Microsoft.Azure.Kinect.BodyTracking.pbd");
-
-
-
-			System.Console.WriteLine(depthEngineDllPath);
+            System.Console.WriteLine(depthEngineDllPath);
 			PublicDelayLoadDLLs.AddRange(
 				new string[] {
 					depthEngineDllPath,
-					//bodyTrackingDLL,
-					//bodyTrackingPDB,
+					bodyTrackingDLL,
+					bodyTrackingPDB,
 					k4aDllPath,
 					k4abtDllPath,
 				});

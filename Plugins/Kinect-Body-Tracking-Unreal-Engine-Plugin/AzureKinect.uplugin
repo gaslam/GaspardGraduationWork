@@ -11,11 +11,14 @@
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"CanContainContent": true,
-	"IsBetaVersion": true,
+	"IsBetaVersion": false,
 	"EnabledByDefault": true,
 	"IsExperimentalVersion": false,
-	"Installed": false,
-	"SupportedTargetPlatforms": [ "Win64" ],
+	"Installed": true,
+	"CanBeUsedWithUnrealHeaderTool": true,
+	"SupportedTargetPlatforms": [
+		"Win64"
+	],
 	"Modules": [
 		{
 			"Name": "AzureKinect",
@@ -27,5 +30,8 @@
 			"Type": "UncookedOnly",
 			"LoadingPhase": "Default"
 		}
+	],
+	"SupportedPrograms": [
+		"UnrealHeaderTool"
 	]
 }

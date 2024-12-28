@@ -17,10 +17,10 @@ struct FAzureKinectSkeleton
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 ID;
+	int32 ID{};
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FTransform> Joints;
+	TArray<FTransform> Joints{};
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(AzureKinectDeviceLog, Log, All);

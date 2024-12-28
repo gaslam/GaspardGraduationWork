@@ -5,9 +5,9 @@
 DEFINE_LOG_CATEGORY(AzureKinectThreadLog);
 
 FAzureKinectDeviceThread::FAzureKinectDeviceThread(UAzureKinectDevice* Device) :
-	KinectDevice(Device),
 	Thread(nullptr),
-	StopTaskCounter(0)
+	StopTaskCounter(0),
+	KinectDevice(Device)
 {
 	Thread = FRunnableThread::Create(this, TEXT("FAzureKinectDeviceThread"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 	if (!Thread)
