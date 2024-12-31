@@ -9,8 +9,7 @@ public class AzureKinect : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		if (Target.Platform == UnrealTargetPlatform.Win64)
-		{
+
 			string sdkPath = System.Environment.GetEnvironmentVariable("AZUREKINECT_SDK");
 
             System.Console.WriteLine($"{nameof(sdkPath)}: {sdkPath}");
@@ -58,7 +57,6 @@ public class AzureKinect : ModuleRules
 			RuntimeDependencies.Add(depthEngineDllPath);
 			RuntimeDependencies.Add(k4aDllPath);
 			RuntimeDependencies.Add(k4abtDllPath);
-		}
 		
 
 		PrivateIncludePaths.AddRange(
