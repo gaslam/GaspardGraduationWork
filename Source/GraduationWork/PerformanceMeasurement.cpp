@@ -155,6 +155,8 @@ void UPerformanceMeasurement::SetLatencyComponent(ULatencyComponent* Component)
 	}
 	LatencyComponent = Component;
 
+	LatencyComponent->SetMaxLatencySamples(MaxLatencySamples);
+
 	LatencyComponent->OnLatencyUpdated.AddDynamic(this, &UPerformanceMeasurement::OnLatencyUpdated);
 	LatencyComponent->OnProcessUpdated.AddDynamic(this, &UPerformanceMeasurement::OnProcessUpdated);
 	LatencyComponent->OnProcessSaved.AddDynamic(this, &UPerformanceMeasurement::OnProcessSaved);
