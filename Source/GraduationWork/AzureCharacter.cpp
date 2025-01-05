@@ -20,7 +20,7 @@ void AAzureCharacter::BeginPlay()
 	{
 		return;
 	}
-
+	AzureKinect->DeviceIndex = DeviceIndex;
 	AzureKinect->StartDevice();
 }
 

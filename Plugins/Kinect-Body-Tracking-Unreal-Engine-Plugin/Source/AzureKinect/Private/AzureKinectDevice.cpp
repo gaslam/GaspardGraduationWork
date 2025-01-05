@@ -74,67 +74,71 @@ bool UAzureKinectDevice::StartDevice()
 
 	try
 	{
-		// Open connection to the device.
-		//NativeDevice = k4a::device::open(DeviceIndex);
-		// Start the Camera and make sure the Depth Camera is Enabled
-		k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
-		config.depth_mode = static_cast<k4a_depth_mode_t>(DepthMode);
-		config.color_resolution = static_cast<k4a_color_resolution_t>(ColorMode);
-		config.camera_fps = static_cast<k4a_fps_t>(Fps);
-		config.color_format = k4a_image_format_t::K4A_IMAGE_FORMAT_COLOR_BGRA32;
-		config.synchronized_images_only = true;
-		config.wired_sync_mode = K4A_WIRED_SYNC_MODE_STANDALONE;
+		//// Open connection to the device.
+		////NativeDevice = k4a::device::open(DeviceIndex);
+		//// Start the Camera and make sure the Depth Camera is Enabled
+		//k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
+		//config.depth_mode = static_cast<k4a_depth_mode_t>(DepthMode);
+		//config.color_resolution = static_cast<k4a_color_resolution_t>(ColorMode);
+		//config.camera_fps = static_cast<k4a_fps_t>(Fps);
+		//config.color_format = k4a_image_format_t::K4A_IMAGE_FORMAT_COLOR_BGRA32;
+		//config.synchronized_images_only = true;
+		//config.wired_sync_mode = K4A_WIRED_SYNC_MODE_STANDALONE;
 		//NativeDevice.stop_cameras();
 
-		k4a_device_t testHandle = NativeDevice.handle();
+		////bool cap = sampleDev.get_capture(Capture);
 
-		//Capture; capture;
-		//capture = NativeDevice.GetCapture();
-		int32_t testInt = 30000;
-		k4a::device sampleDev = k4a::device::device(testHandle);
-		k4a_capture_t capHandle = Capture.handle();
-		k4a_capture_t* pointHandle = &capHandle;
-		//k4a::capture cap = 
-		k4a_device_get_capture(testHandle, pointHandle, testInt);
-		k4a::image im = k4a_capture_get_color_image(capHandle);
-		k4a::image dep = k4a_capture_get_depth_image(capHandle);
+		//k4a::image dep2 = Capture.get_depth_image();
+		////NativeDevice.get_capture(&Capture, FrameTime);
+		////k4a::image testImage = k4a_capture_get_depth_image(testHandle);
+		//k4a_device_t device = NULL;
+		//if (K4A_FAILED(k4a_device_open(K4A_DEVICE_DEFAULT, &device)))
+		//{
+		//	printf("Failed to open k4a device!\n");
+		//	return 1;
+		//}
+		//// Configure a stream of 4096x3072 BRGA color data at 15 frames per second
+		///*
+		//k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
+		//
+		//config.camera_fps = K4A_FRAMES_PER_SECOND_30;
+		//config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
+		//config.depth_mode = K4A_DEPTH_MODE_NFOV_UNBINNED;
+		//config.synchronized_images_only = true;
+		//config.wired_sync_mode = K4A_WIRED_SYNC_MODE_STANDALONE;
+		////config.color_resolution = static_cast<k4a_color_resolution_t>(ColorMode);
+		//config.color_resolution = K4A_COLOR_RESOLUTION_2160P;
+		//*/
+		////test._handle_name_
+		////k4a::handle::
+		//// Start the camera with the given configuration
+		////k4a_device_stop_cameras(device);
+		//if (K4A_FAILED(k4a_device_start_cameras(device, &config)))
+		//{
+		//	printf("Failed to start cameras!\n");
+		//	k4a_device_close(device);
+		//	return 1;
+		//}
 
-		//bool cap = sampleDev.get_capture(Capture);
-
-		k4a::image dep2 = Capture.get_depth_image();
-		//NativeDevice.get_capture(&Capture, FrameTime);
-		//k4a::image testImage = k4a_capture_get_depth_image(testHandle);
 		k4a_device_t device = NULL;
-		if (K4A_FAILED(k4a_device_open(K4A_DEVICE_DEFAULT, &device)))
-		{
-			printf("Failed to open k4a device!\n");
+		if (K4A_RESULT_SUCCEEDED != k4a_device_open(0, &device)) {
+			printf("Failed to open Azure Kinect device!\n");
 			return 1;
 		}
-		// Configure a stream of 4096x3072 BRGA color data at 15 frames per second
-		/*
+
 		k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
-		
-		config.camera_fps = K4A_FRAMES_PER_SECOND_30;
 		config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
+		config.color_resolution = K4A_COLOR_RESOLUTION_1080P;
 		config.depth_mode = K4A_DEPTH_MODE_NFOV_UNBINNED;
-		config.synchronized_images_only = true;
-		config.wired_sync_mode = K4A_WIRED_SYNC_MODE_STANDALONE;
-		//config.color_resolution = static_cast<k4a_color_resolution_t>(ColorMode);
-		config.color_resolution = K4A_COLOR_RESOLUTION_2160P;
-		*/
-		//test._handle_name_
-		//k4a::handle::
-		// Start the camera with the given configuration
-		k4a_device_stop_cameras(device);
-		if (K4A_FAILED(k4a_device_start_cameras(device, &config)))
-		{
-			printf("Failed to start cameras!\n");
+		config.camera_fps = K4A_FRAMES_PER_SECOND_30;
+
+		if (K4A_RESULT_SUCCEEDED != k4a_device_start_cameras(device, &config)) {
+			printf("Failed to start Azure Kinect cameras!\n");
 			k4a_device_close(device);
 			return 1;
 		}
-		NativeDevice = k4a::device(device);
 
-		//NativeDevice.start_cameras(&DeviceConfig);
+		NativeDevice = k4a::device(device);
 
 		KinectCalibration = NativeDevice.get_calibration(config.depth_mode, config.color_resolution);
 		KinectTransformation = k4a::transformation(KinectCalibration);
@@ -311,6 +315,22 @@ void UAzureKinectDevice::UpdateAsync()
 
 }
 
+float UAzureKinectDevice::GetFrameTime() const
+{
+	return FrameTime.count();
+}
+
+FString UAzureKinectDevice::GetDeviceName() const
+{
+	FString DeviceName = "No Device";
+
+	if (DeviceList.IsValidIndex(DeviceIndex))
+	{
+		DeviceName = *DeviceList[DeviceIndex];
+	}
+	return DeviceName;
+}
+
 void UAzureKinectDevice::CaptureColorImage()
 {
 	int32 Width = 0, Height = 0;
@@ -373,8 +393,13 @@ void UAzureKinectDevice::CaptureColorImage()
 	}	
 	else
 	{
-
 		FTextureResource* TextureResource = ColorTexture->GetResource();
+
+		if (!TextureResource)
+		{
+			return;
+		}
+
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
@@ -475,6 +500,11 @@ void UAzureKinectDevice::CaptureDepthImage()
 		FTextureResource* TextureResource = DepthTexture->GetResource();
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
+		if (!TextureResource)
+		{
+			return;
+		}
+
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
 			[TextureResource, Region, SrcData](FRHICommandListImmediate& RHICmdList) {
 				FTextureRHIRef Texture2D = TextureResource->TextureRHI ? TextureResource->TextureRHI->GetTexture2D() : nullptr;
@@ -532,6 +562,12 @@ void UAzureKinectDevice::CaptureInflaredImage()
 		}
 		
 		FTextureResource* TextureResource = InflaredTexture->GetResource();
+
+		if (!TextureResource)
+		{
+			return;
+		}
+
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
@@ -550,6 +586,7 @@ void UAzureKinectDevice::CaptureInflaredImage()
 
 void UAzureKinectDevice::CaptureBodyIndexImage(const k4abt::frame& BodyFrame)
 {
+	FScopeLock Lock(Thread->GetCriticalSection());
 	k4a::image BodyIndexMap = BodyFrame.get_body_index_map();
 
 	int32 Width = BodyIndexMap.get_width_pixels(), Height = BodyIndexMap.get_height_pixels();
@@ -575,6 +612,12 @@ void UAzureKinectDevice::CaptureBodyIndexImage(const k4abt::frame& BodyFrame)
 		}
 
 		FTextureResource* TextureResource = BodyIndexTexture->GetResource();
+
+		if (!TextureResource)
+		{
+			return;
+		}
+
 		auto Region = FUpdateTextureRegion2D(0, 0, 0, 0, Width, Height);
 
 		ENQUEUE_RENDER_COMMAND(UpdateTextureData)(
@@ -644,6 +687,15 @@ void UAzureKinectDevice::UpdateSkeletons()
 			}
 
 			Skeletons.Push(Skeleton);
+		}
+
+		if (NumTrackedSkeletons != m_PreviousBodyCount)
+		{
+			UE_LOG(AzureKinectDeviceLog, Log, TEXT("Number of Skeletons: %d"), NumTrackedSkeletons);
+
+			const bool IsVisible = !Skeletons.IsEmpty();
+			OnSkeletonChanged.Broadcast(IsVisible);
+			m_PreviousBodyCount = NumTrackedSkeletons;
 		}
 	}
 	

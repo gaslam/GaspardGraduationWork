@@ -34,7 +34,7 @@ public:
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
-	int32 DeviceIndex = 0;
+	int32 DeviceIndex = 1;
 
 
 };

@@ -17,11 +17,13 @@ struct FAzureKinectSkeleton
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	int32 ID{};
+	int32 ID;
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FTransform> Joints{};
+	TArray<FTransform> Joints;
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkeletonChanged, bool,IsVisible);
 
 DECLARE_LOG_CATEGORY_EXTERN(AzureKinectDeviceLog, Log, All);
 
@@ -118,9 +120,19 @@ public:
 	 */
 	void UpdateAsync();
 
+	UFUNCTION(BlueprintCallable, Category = "Time")
+	float GetFrameTime() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Devices")
+	FString GetDeviceName() const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skeletons")
+	FOnSkeletonChanged OnSkeletonChanged;
+
 	TArray<TSharedPtr<FString>> DeviceList;
 
 private:
+	int32 m_PreviousBodyCount{};
 	bool bOpen;
 
 	void CaptureColorImage();
