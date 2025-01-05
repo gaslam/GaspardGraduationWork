@@ -90,9 +90,9 @@ FString UPerformanceMeasurement::ConvertToStringTwoDigitsMS(const double Value) 
 
 void UPerformanceMeasurement::OnLatencyUpdated(int Amount)
 {
-	float Percentage = (static_cast<float>(Amount) / static_cast<float>(MaxLatencySamples)) * 100.0f;
+	const float Percentage = (static_cast<float>(Amount) / static_cast<float>(MaxLatencySamples)) * 100.0f;
 
-	SampleExportStatus = FString::Printf(TEXT("Processing: %.2f%% of samples"), Percentage);
+	SampleExportStatus = FString::Printf(TEXT("Move untill the current process is finished!!\n\nProcessing: %.2f%% of %d samples"), Percentage,MaxLatencySamples);
 }
 
 void UPerformanceMeasurement::OnProcessUpdated(bool bIsActive)
