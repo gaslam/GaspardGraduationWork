@@ -59,6 +59,15 @@ protected:
 	TObjectPtr<class UVRNotificationsComponent> NotificationsComponent;
 
 
+	UPROPERTY(BlueprintReadWrite,Category="UI")
+	TObjectPtr<class UPerformanceMeasurement> PerformanceMeasurement;
+
+	UFUNCTION(BlueprintCallable, Category = "MotionController")
+	void SetDeviceName();
+
+	UFUNCTION(BlueprintCallable, Category = "MotionController")
+	void ResetDeviceName();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -7,6 +7,9 @@
 #include "XRDeviceVisualizationComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "VRNotificationsComponent.h"
+#include "IXRTrackingSystem.h"
+#include "HeadMountedDisplay.h"
+#include "PerformanceMeasurement.h"
 #include "Camera/CameraComponent.h"
 
 
@@ -78,6 +81,32 @@ void AMotionController::SetupCamera()
 
 	CameraComponent->SetRelativeLocation(FVector(-150.f, 0.0f, 0.0f));
 	CameraComponent->SetupAttachment(ControllerOrigin);
+}
+
+void AMotionController::SetDeviceName()
+{
+	const auto& XRSystem = GEngine->XRSystem;
+	if (!XRSystem)
+	{
+		return;
+	}
+
+	const auto Device = XRSystem->GetHMDDevice();
+
+	if (!Device)
+	{
+		return;
+	}
+	FName Name = Device->GetHMDName();
+	PerformanceMeasurement->SetDeviceName(Name.ToString());
+}
+
+void AMotionController::ResetDeviceName()
+{
+	if (PerformanceMeasurement)
+	{
+		PerformanceMeasurement->ResetDeviceName();
+	}
 }
 
 // Called every frame
