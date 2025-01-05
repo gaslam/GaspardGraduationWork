@@ -7,6 +7,11 @@
 #include "MyActorComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLatencyUpdated, int, Amount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnProcessUpdated, bool,bIsActive);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnProcessSaved, FString, StatusMessage,bool,bHasSucceeded);
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GRADUATIONWORK_API ULatencyComponent : public UActorComponent
 {
@@ -24,6 +29,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Latency")
 	void StartRecording();
+
+	UPROPERTY(BlueprintAssignable, Category = "Latency")
+	FOnLatencyUpdated OnLatencyUpdated;
+
+	UPROPERTY(BlueprintAssignable, Category = "Latency")
+	FOnProcessUpdated OnProcessUpdated;
+
+	UPROPERTY(BlueprintAssignable, Category = "Latency")
+	FOnProcessSaved OnProcessSaved;
+
+	UFUNCTION(BlueprintPure, Category = "Latency")
+	bool IsRecording() const { return m_bIsRecording; }
 
 protected:
 	// Called when the game starts

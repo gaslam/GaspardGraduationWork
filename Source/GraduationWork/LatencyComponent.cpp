@@ -40,6 +40,7 @@ void ULatencyComponent::StartRecording()
 {
 	m_bIsRecording = true;
 	m_TotalLatencySamples = 0;
+	OnProcessUpdated.Broadcast(m_bIsRecording);
 }
 
 void ULatencyComponent::SaveStatisticsToCSV()
@@ -65,19 +66,22 @@ void ULatencyComponent::SaveStatisticsToCSV()
 	//CalculateStatistics(Avg, Min, Max);
 	//CSVContent += FString::Printf(TEXT("\nStatistics\nAverage,%.2f\nMin,%.2f\nMax,%.2f\n"), Avg, Min, Max);
 
+	FString StatusMessage{};
+	bool bHasSucceeded{ false };
+
 	if (FFileHelper::SaveStringToFile(CSVContent, *SavePath))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Statistics saved successfully to: %s"), *SavePath);
-
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Statistics saved successfully to: %s"), *SavePath));
-		}
+		bHasSucceeded = true;
+		StatusMessage = FString::Printf(TEXT("Succesfully saved statistics to: %s"), *SavePath);
+		UE_LOG(LogTemp, Log, TEXT("%s"), *StatusMessage);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to save statistics to: %s"), *SavePath);
+		StatusMessage = FString::Printf(TEXT("Failed to save statistics to: %s"), *SavePath);
+
+		UE_LOG(LogTemp, Error, TEXT("%s"), *StatusMessage);
 	}
+	OnProcessSaved.Broadcast(StatusMessage, bHasSucceeded);
 }
 
 //void ULatencyComponent::CalculateStatistics(float& Average, float& Min,float& Max) const
@@ -115,6 +119,7 @@ void ULatencyComponent::UpdateLatency(float Latency,float FramesPerSec,float Fra
 
 	if (m_TotalLatencySamples < m_MaxLatencySamples)
 	{
+		OnLatencyUpdated.Broadcast(m_TotalLatencySamples);
 		LatencySamples[m_TotalLatencySamples] = Latency;
 		FPS[m_TotalLatencySamples] = FramesPerSec;
 		FrameTime[m_TotalLatencySamples] = FrameTimeMS;
@@ -122,8 +127,9 @@ void ULatencyComponent::UpdateLatency(float Latency,float FramesPerSec,float Fra
 
 		if (m_TotalLatencySamples >= m_MaxLatencySamples)
 		{
-			m_bIsRecording = false;
 			SaveStatisticsToCSV();
+			m_bIsRecording = false;
+			OnProcessUpdated.Broadcast(m_bIsRecording);
 		}
 	}
 }

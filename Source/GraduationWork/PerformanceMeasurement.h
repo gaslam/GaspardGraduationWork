@@ -8,14 +8,14 @@
 /**
  * 
  */
+
+class ULatencyComponent;
 UCLASS()
 class GRADUATIONWORK_API UPerformanceMeasurement final : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-    UPROPERTY(BlueprintReadWrite, Category = "Performance")
-    TObjectPtr<class ULatencyComponent> LatencyComponent;
 
     UFUNCTION(BlueprintCallable, Category = "Performance")
     /*Sets the device name. Returns with None if empty*/
@@ -32,15 +32,22 @@ public:
     // Resets the device name to the default value
     UFUNCTION(BlueprintCallable, Category = "Performance")
 	void ResetDeviceName();
+    // Resets the device name to the default value
+    UFUNCTION(BlueprintCallable, Category = "Performance")
+    void SetLatencyComponent(ULatencyComponent* LatencyComponent);
 
 protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
+	bool bIsProcessActive{ false };
+	int MaxLatencySamples{ 1000 };
 	float DeviceFrameTime{ 0.0f };
 	const FString DeviceDefaultName{ "None" };
     FString DeviceName{DeviceDefaultName};
-    FString SampleExportStatus{};
+    FString SampleExportStatus{ "Press Export CSV to start data collection" };
+
+    TObjectPtr<ULatencyComponent> LatencyComponent;
 
     /** Gets the actual FPS from the engine */
     UFUNCTION(BlueprintPure, Category = "Performance")
@@ -57,12 +64,35 @@ private:
 
     /** Gets the actual device name */
     UFUNCTION(BlueprintPure, Category = "Performance")
-    FString GetDeviceName() const { return DeviceName; };
+    FString GetDeviceName() const { return DeviceName; }
 
     /** Gets the actual status of sample exports to excel */
     UFUNCTION(BlueprintPure, Category = "Performance")
-	FString GetSampleExportStatus() const { return SampleExportStatus; };
+	FString GetSampleExportStatus() const { return SampleExportStatus; }
+
+    /** Gets the actual status of sample exports to excel */
+    UFUNCTION(BlueprintPure, Category = "Performance")
+    int GetMaxLatencySamples() const { return MaxLatencySamples; }
+
+
+    UFUNCTION(BlueprintPure, Category = "Performance")
+    ULatencyComponent* GetLatencyComponent() const { return LatencyComponent; }
+
+    UFUNCTION(BlueprintPure, Category = "Performance")
+    bool IsProcessActive() const { return bIsProcessActive; }
+
+    UFUNCTION(BlueprintPure, Category = "Performance")
+    bool IsInputEnabled() const { return !IsProcessActive(); }
 
 	FString ConvertToStringTwoDigits(const double Value) const;
 	FString ConvertToStringTwoDigitsMS(const double Value) const;
+
+	UFUNCTION(Category = "Performance")
+	void OnLatencyUpdated(int Amount);
+
+    UFUNCTION(Category = "Performance")
+    void OnProcessUpdated(bool bIsActive);
+
+	UFUNCTION(Category = "Performance")
+	void OnProcessSaved(FString StatusMessage, bool bHasSucceeded);
 };

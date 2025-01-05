@@ -2,6 +2,7 @@
 
 
 #include "PerformanceMeasurement.h"
+#include "MyActorComponent.h"
 #include "Misc/App.h"
 
 void UPerformanceMeasurement::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -61,7 +62,39 @@ FString UPerformanceMeasurement::ConvertToStringTwoDigitsMS(const double Value) 
 	return FString::Printf(TEXT("%s ms"), *DigitString);
 }
 
+void UPerformanceMeasurement::OnLatencyUpdated(int Amount)
+{
+	float Percentage = (static_cast<float>(Amount) / static_cast<float>(MaxLatencySamples)) * 100.0f;
+
+	SampleExportStatus = FString::Printf(TEXT("Processing: %.2f%% of samples"), Percentage);
+}
+
+void UPerformanceMeasurement::OnProcessUpdated(bool bIsActive)
+{
+	bIsProcessActive = bIsActive;
+}
+
+void UPerformanceMeasurement::OnProcessSaved(FString StatusMessage, bool bHasSucceeded)
+{
+	SampleExportStatus = StatusMessage;
+}
+
 FString UPerformanceMeasurement::ConvertToStringTwoDigits(const double Value) const
 {
 	return FString::Printf(TEXT("%.2f"), Value);
+}
+
+void UPerformanceMeasurement::SetLatencyComponent(ULatencyComponent* Component)
+{
+	if(LatencyComponent)
+	{
+		LatencyComponent->OnLatencyUpdated.RemoveDynamic(this, &UPerformanceMeasurement::OnLatencyUpdated);
+		LatencyComponent->OnProcessUpdated.RemoveDynamic(this, &UPerformanceMeasurement::OnProcessUpdated);
+		LatencyComponent->OnProcessSaved.RemoveDynamic(this, &UPerformanceMeasurement::OnProcessSaved);
+	}
+	LatencyComponent = Component;
+
+	LatencyComponent->OnLatencyUpdated.AddDynamic(this, &UPerformanceMeasurement::OnLatencyUpdated);
+	LatencyComponent->OnProcessUpdated.AddDynamic(this, &UPerformanceMeasurement::OnProcessUpdated);
+	LatencyComponent->OnProcessSaved.AddDynamic(this, &UPerformanceMeasurement::OnProcessSaved);
 }
