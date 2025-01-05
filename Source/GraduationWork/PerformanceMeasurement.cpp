@@ -10,6 +10,11 @@ void UPerformanceMeasurement::NativeTick(const FGeometry& MyGeometry, float InDe
 	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
+void UPerformanceMeasurement::NativeDestruct()
+{
+	DisableTimer();
+}
+
 void UPerformanceMeasurement::SetDeviceName(const FString& Name)
 {
 	FString TempName = Name;
@@ -19,6 +24,27 @@ void UPerformanceMeasurement::SetDeviceName(const FString& Name)
 		TempName = DeviceDefaultName;
 	}
 	DeviceName = TempName;
+}
+
+void UPerformanceMeasurement::StartProcess()
+{
+	if (bIsProcessActive)
+	{
+		return;
+	}
+	const auto World = GetWorld();
+
+	if(!World)
+	{
+		return;
+	}
+
+	auto& TimeManager = World->GetTimerManager();
+
+	TimeManager.SetTimer(TimerHandle, this, &UPerformanceMeasurement::CountDown, 1, true);
+
+	constexpr bool bIsActive{ true };
+	OnProcessUpdated(bIsActive);
 }
 
 void UPerformanceMeasurement::SetDeviceFrameTime(const float Value)
@@ -77,6 +103,41 @@ void UPerformanceMeasurement::OnProcessUpdated(bool bIsActive)
 void UPerformanceMeasurement::OnProcessSaved(FString StatusMessage, bool bHasSucceeded)
 {
 	SampleExportStatus = StatusMessage;
+}
+
+void UPerformanceMeasurement::CountDown()
+{
+	if (CountdownNumber <= 0)
+	{
+		StartRecording();
+		return;
+	}
+	SampleExportStatus = FString::Printf(TEXT("Prepare yourself!!\n\nExport starting in %d"),CountdownNumber);
+	--CountdownNumber;
+}
+
+void UPerformanceMeasurement::StartRecording()
+{
+	if (LatencyComponent)
+	{
+		LatencyComponent->StartRecording();
+	}
+
+	DisableTimer();
+}
+
+void UPerformanceMeasurement::DisableTimer()
+{
+	const auto World = GetWorld();
+
+	if (!World)
+	{
+		return;
+	}
+
+	auto& TimeManager = World->GetTimerManager();
+
+	TimeManager.ClearTimer(TimerHandle);
 }
 
 FString UPerformanceMeasurement::ConvertToStringTwoDigits(const double Value) const

@@ -22,6 +22,9 @@ public:
     void SetDeviceName(const FString& Name);
 
     UFUNCTION(BlueprintCallable, Category = "Performance")
+    void StartProcess();
+
+    UFUNCTION(BlueprintCallable, Category = "Performance")
     /*Sets the device frame time of the received device. Returns with None if empty*/
     void SetDeviceFrameTime(const float Name);
 
@@ -39,13 +42,18 @@ public:
 protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	void NativeDestruct() override;
+
 private:
 	bool bIsProcessActive{ false };
 	int MaxLatencySamples{ 1000 };
+	int CountdownNumber{ 10 };
 	float DeviceFrameTime{ 0.0f };
 	const FString DeviceDefaultName{ "None" };
     FString DeviceName{DeviceDefaultName};
     FString SampleExportStatus{ "Press Export CSV to start data collection" };
+
+	FTimerHandle TimerHandle;
 
     TObjectPtr<ULatencyComponent> LatencyComponent;
 
@@ -95,4 +103,11 @@ private:
 
 	UFUNCTION(Category = "Performance")
 	void OnProcessSaved(FString StatusMessage, bool bHasSucceeded);
+
+	UFUNCTION(Category = "Performance")
+	void CountDown();
+
+	void StartRecording();
+
+	void DisableTimer();
 };
