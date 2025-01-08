@@ -9,7 +9,7 @@ public class GraduationWork : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay",
-            "InputDevice","XRBase","OpenXR","AzureKinect","LiveLink", "LiveLinkInterface","LiveLinkComponents" });
+            "InputDevice","XRBase","OpenXR","OpenXRHMD","AzureKinect","LiveLink", "LiveLinkInterface","LiveLinkComponents","OpenXRInput" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

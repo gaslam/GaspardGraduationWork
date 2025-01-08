@@ -68,6 +68,11 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "MotionController")
 	void ResetDeviceName();
 
+	UFUNCTION(BlueprintCallable, Category = "MotionController")
+	void SetDevice();
+
+	UFUNCTION(BlueprintPure, Category = "MotionController")
+	float GetPredictedDisplayTime();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -76,6 +81,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+
+	TObjectPtr<class FOpenXRHMD> OpenXRHMD;
 	void SetupHands();
 
 	void SetupCamera();

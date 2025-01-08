@@ -8,9 +8,9 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "VRNotificationsComponent.h"
 #include "IXRTrackingSystem.h"
-#include "HeadMountedDisplay.h"
 #include "PerformanceMeasurement.h"
 #include "Camera/CameraComponent.h"
+#include <OpenXRHMD/Private/OpenXRHMD.h>
 
 
 // Sets default values
@@ -35,7 +35,7 @@ AMotionController::AMotionController()
 void AMotionController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetDevice();
 }
 
 void AMotionController::SetupHands()
@@ -101,12 +101,43 @@ void AMotionController::SetDeviceName()
 	PerformanceMeasurement->SetDeviceName(Name.ToString());
 }
 
+
+float AMotionController::GetPredictedDisplayTime()
+{
+	if (OpenXRHMD)
+	{
+		const float PredictedTime = OpenXRHMD->GetDisplayTime();
+		return PredictedTime;
+	}
+
+	return 0.0;
+}
+
 void AMotionController::ResetDeviceName()
 {
 	if (PerformanceMeasurement)
 	{
 		PerformanceMeasurement->ResetDeviceName();
 	}
+}
+
+void AMotionController::SetDevice()
+{
+	const auto& XRSystem = GEngine->XRSystem;
+	if (!XRSystem)
+	{
+		return;
+	}
+
+	const auto Device = static_cast<FOpenXRHMD*>(XRSystem->GetHMDDevice());
+
+	if (!Device)
+	{
+		return;
+	}
+
+	OpenXRHMD = Device;
+	SetDeviceName();
 }
 
 // Called every frame
