@@ -75,16 +75,16 @@ bool UAzureKinectDevice::StartDevice()
 	try
 	{
 		//// Open connection to the device.
-		////NativeDevice = k4a::device::open(DeviceIndex);
-		//// Start the Camera and make sure the Depth Camera is Enabled
-		//k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
-		//config.depth_mode = static_cast<k4a_depth_mode_t>(DepthMode);
-		//config.color_resolution = static_cast<k4a_color_resolution_t>(ColorMode);
-		//config.camera_fps = static_cast<k4a_fps_t>(Fps);
-		//config.color_format = k4a_image_format_t::K4A_IMAGE_FORMAT_COLOR_BGRA32;
-		//config.synchronized_images_only = true;
-		//config.wired_sync_mode = K4A_WIRED_SYNC_MODE_STANDALONE;
-		//NativeDevice.stop_cameras();
+		NativeDevice = k4a::device::open(DeviceIndex);
+		// Start the Camera and make sure the Depth Camera is Enabled
+		k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
+		config.depth_mode = static_cast<k4a_depth_mode_t>(DepthMode);
+		config.color_resolution = static_cast<k4a_color_resolution_t>(ColorMode);
+		config.camera_fps = static_cast<k4a_fps_t>(Fps);
+		config.color_format = k4a_image_format_t::K4A_IMAGE_FORMAT_COLOR_BGRA32;
+		config.synchronized_images_only = true;
+		config.wired_sync_mode = K4A_WIRED_SYNC_MODE_STANDALONE;
+		NativeDevice.start_cameras(&config);
 
 		////bool cap = sampleDev.get_capture(Capture);
 
@@ -120,25 +120,25 @@ bool UAzureKinectDevice::StartDevice()
 		//	return 1;
 		//}
 
-		k4a_device_t device = NULL;
-		if (K4A_RESULT_SUCCEEDED != k4a_device_open(0, &device)) {
-			printf("Failed to open Azure Kinect device!\n");
-			return 1;
-		}
+		//k4a_device_t device = NULL;
+		//if (K4A_RESULT_SUCCEEDED != k4a_device_open(0, &device)) {
+		//	printf("Failed to open Azure Kinect device!\n");
+		//	return 1;
+		//}
 
-		k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
-		config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
-		config.color_resolution = K4A_COLOR_RESOLUTION_1080P;
-		config.depth_mode = K4A_DEPTH_MODE_NFOV_UNBINNED;
-		config.camera_fps = K4A_FRAMES_PER_SECOND_30;
+		//k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
+		//config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
+		//config.color_resolution = K4A_COLOR_RESOLUTION_1080P;
+		//config.depth_mode = K4A_DEPTH_MODE_NFOV_UNBINNED;
+		//config.camera_fps = K4A_FRAMES_PER_SECOND_30;
 
-		if (K4A_RESULT_SUCCEEDED != k4a_device_start_cameras(device, &config)) {
-			printf("Failed to start Azure Kinect cameras!\n");
-			k4a_device_close(device);
-			return 1;
-		}
+		//if (K4A_RESULT_SUCCEEDED != k4a_device_start_cameras(device, &config)) {
+		//	printf("Failed to start Azure Kinect cameras!\n");
+		//	k4a_device_close(device);
+		//	return 1;
+		//}
 
-		NativeDevice = k4a::device(device);
+		//NativeDevice = k4a::device(device);
 
 		KinectCalibration = NativeDevice.get_calibration(config.depth_mode, config.color_resolution);
 		KinectTransformation = k4a::transformation(KinectCalibration);
@@ -323,10 +323,12 @@ float UAzureKinectDevice::GetFrameTime() const
 FString UAzureKinectDevice::GetDeviceName() const
 {
 	FString DeviceName = "No Device";
+	//First device is empty
+	const int DeviceNr{ DeviceIndex + 1 };
 
-	if (DeviceList.IsValidIndex(DeviceIndex))
+	if (DeviceList.IsValidIndex(DeviceNr))
 	{
-		DeviceName = *DeviceList[DeviceIndex];
+		DeviceName = *DeviceList[DeviceNr];
 	}
 	return DeviceName;
 }

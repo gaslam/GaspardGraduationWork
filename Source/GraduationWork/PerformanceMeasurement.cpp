@@ -5,6 +5,31 @@
 #include "MyActorComponent.h"
 #include "Misc/App.h"
 
+void UPerformanceMeasurement::SetDeviceFPS(const float FPS)
+{
+	DeviceFPS = FPS;
+}
+
+void UPerformanceMeasurement::SetDeviceKinectFPS(const EKinectFps FPS)
+{
+	switch (FPS)
+	{
+	case EKinectFps::PER_SECOND_5:
+		DeviceFPS = 5.0f;
+		break;
+	case EKinectFps::PER_SECOND_15:
+		DeviceFPS = 15.0f;
+		break;
+	case EKinectFps::PER_SECOND_30:
+		DeviceFPS = 30.0f;
+		break;
+	default:
+		DeviceFPS = 0.0f;
+		break;
+	}
+
+}
+
 void UPerformanceMeasurement::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);

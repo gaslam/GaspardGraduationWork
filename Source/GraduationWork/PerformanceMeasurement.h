@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AzureKinectEnum.h"
 #include "Blueprint/UserWidget.h"
 #include "PerformanceMeasurement.generated.h"
 /**
@@ -39,6 +40,14 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Performance")
     void SetLatencyComponent(ULatencyComponent* LatencyComponent);
 
+
+    // Sets the device fps
+    UFUNCTION(BlueprintCallable, Category = "Performance")
+	void SetDeviceFPS(const float FPS);
+    // Sets the azure kinect fps
+    UFUNCTION(BlueprintCallable, Category = "Performance")
+    void SetDeviceKinectFPS(const EKinectFps FPS);
+
 protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -49,6 +58,8 @@ private:
 	int MaxLatencySamples{ 1000 };
 	int CountdownNumber{ 10 };
 	float DeviceFrameTime{ 0.0f };
+	float DeviceFPS{ 0.0f };
+
 	const FString DeviceDefaultName{ "None" };
     FString DeviceName{DeviceDefaultName};
     FString SampleExportStatus{ "Press Export CSV to start data collection" };
@@ -91,6 +102,9 @@ private:
 
     UFUNCTION(BlueprintPure, Category = "Performance")
     bool IsInputEnabled() const { return !IsProcessActive(); }
+
+	UFUNCTION(BlueprintPure, Category = "Performance")
+	float GetDeviceFPS() const { return DeviceFPS; }
 
 	FString ConvertToStringTwoDigits(const double Value) const;
 	FString ConvertToStringTwoDigitsMS(const double Value) const;
